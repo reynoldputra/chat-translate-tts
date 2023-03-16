@@ -3,15 +3,15 @@
     <label>Input text</label><br />
     <textarea v-model="input.text"></textarea><br />
     <label>Choose language</label><br />
-    <select v-model="input.lang">
-      <option v-for="(lang, idx) in langs" :value="lang.langCode" :id="idx" :key="idx">
-        {{ lang.lang + " - " + lang.langCode }}
+    <select v-model="input.lang" @change="filterVoiceName">
+      <option v-for="(lang, idx) in langs" :value="lang" :id="idx" :key="idx">
+        {{ lang }}
       </option>
     </select><br />
     <div v-if="input.lang">
       <label>Choose voice type</label><br />
       <select v-model="input.name">
-        <option v-for="(name, idx) in names[input.lang]" :value="idx" :id="idx" :key="idx">{{ name }}</option>
+          <option  v-for="(voice, idx) in voices" :value="idx" :id="idx" :key="idx"  >{{ voice.name  }}</option>
       </select>
     </div>
     <button v-if="input.text != null && input.name != null" @click="playVoice">Play</button>
@@ -23,7 +23,8 @@
 export default {
   data() {
     return {
-      names: [],
+      voices: [],
+      voiceByLang: [],
       langs: [],
       input: {
         text: null,
@@ -35,8 +36,7 @@ export default {
   },
   methods: {
     async playVoice() {
-      console.log(this.input.text)
-      console.log(this.langs[this.input.name].voice)
+      const choosedVoice = this.voiceByLang[this.input.name]
       await new Promise((resolve, reject) => {
         this.isPlay = true
         const tts = window.speechSynthesis
@@ -50,32 +50,23 @@ export default {
           reject()
         })
         const voice = new SpeechSynthesisUtterance(this.input.text)
-        voice.voice = this.langs[this.input.name].voice
+        voice.voice = choosedVoice 
         tts.speak(voice)
       })
-      // console.log(this.input.text)
-      // const tts = window.speechSynthesis
-      // const voice = new SpeechSynthesisUtterance(this.input.text)
-      // tts.speak(voice)
     },
     getVoiceList() {
       const tts = window.speechSynthesis
       const voices = tts.getVoices()
-      voices.forEach((voice) => { 
-        let originName = voice.name
-        let langCode =  voice.lang
-        let lang = originName.split(" - ")[1] 
-        let name = originName.split(" - ")[0]
-        let langObj = {
-          langCode, lang, originName, voice
-        }
-        if(!this.langs.some((langObj) => {
-          if (langObj.langCode == langCode) return true
-          else false
-        })) this.langs.push(langObj)
-        if(!this.names[langCode]) this.names[langCode] = new Array()
-        this.names[langCode].push(name)
+      voices.forEach((voice) => {
+        if(!this.langs.includes(voice.lang))
+          this.langs.push(voice.lang)
       })
+      this.voices = voices 
+    },
+    filterVoiceName() {
+      this.voiceByLang = this.voices.filter((voice) => {
+        return voice.lang == this.input.lang
+      })  
     }
   },
   mounted() {
