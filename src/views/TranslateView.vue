@@ -14,9 +14,10 @@
         {{ language.name }}
       </option></select
     ><br />
-    <label>Output text</label><br />
-    <textarea v-model="outputText"></textarea><br />
-    <button @click="translateText">Translate</button>
+    <button @click="translateText">Translate</button><br />
+    <p>
+      {{ outputText }}
+    </p>
   </div>
 </template>
 
@@ -31,17 +32,16 @@ export default {
       outputText: '',
       languageList,
       inputLanguage: '',
-      outputLanguage: '',
+      outputLanguage: ''
     }
   },
   methods: {
     translateText() {
-      console.log(this.inputText, this.inputLanguage)
       const encodedParams = new URLSearchParams()
       encodedParams.append('q', this.inputText)
-      encodedParams.append('target', this.inputLanguage)
-      encodedParams.append('source', this.outputLanguage)
-      
+      encodedParams.append('target', this.outputLanguage)
+      encodedParams.append('source', this.inputLanguage)
+
       const options = {
         method: 'POST',
         url: 'https://google-translate1.p.rapidapi.com/language/translate/v2',
@@ -54,18 +54,15 @@ export default {
         data: encodedParams
       }
       axios
-      .request(options)
-      .then(function (response) {
-        console.log(response.data)
+        .request(options)
+        .then( (response) => {
           this.outputText = response.data.data.translations[0].translatedText
-          console.log(this.outputText, this.outputLanguage)
         })
-        .catch(function (error) {
+        .catch( (error) => {
           console.error(error)
         })
     }
   },
-  mounted() {
-  }
+  mounted() {}
 }
 </script>
