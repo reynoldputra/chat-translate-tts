@@ -115,18 +115,6 @@ export default {
       },
       person: 1,
       chats : [
-        {
-          person : 1,
-          textInput : "testing my voice",
-          textOutput : "menguji suaraku",
-          langCode : "en"
-        },
-        {
-          person : 2,
-          textInput : "Hallo apa kabar",
-          textOutput : "Hello how are you",
-          langCode : "id"
-        }
       ],
       voiceList : [],
       selectedFile: null,
