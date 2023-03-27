@@ -6,20 +6,25 @@
     <select v-model="input.lang" @change="filterVoiceName">
       <option v-for="(lang, idx) in langs" :value="lang" :id="idx" :key="idx">
         {{ lang }}
-      </option>
-    </select><br />
+      </option></select
+    ><br />
     <div v-if="input.lang">
       <label>Choose voice type</label><br />
       <select v-model="input.name">
-          <option  v-for="(voice, idx) in voices" :value="idx" :id="idx" :key="idx"  >{{ voice.name  }}</option>
+        <option v-for="(voice, idx) in voices" :value="idx" :id="idx" :key="idx">
+          {{ voice.name }}
+        </option>
       </select>
     </div>
-    <button v-if="input.text != null && input.name != null" @click="playVoice">Play</button>
-    <!-- <p v-show="isPlay">Playing ...</p>  -->
+    <div>
+      <button @click="playVoice">Play</button>       
+    </div>
   </div>
 </template>
 
 <script>
+import SpeechSynthesisRecorder from '../lib/SpeechRecorder'
+
 export default {
   data() {
     return {
@@ -31,7 +36,8 @@ export default {
         lang: null,
         name: null
       },
-      isPlay: false
+      isPlay: false,
+      audioRecorder: null
     }
   },
   methods: {
@@ -41,7 +47,7 @@ export default {
         this.isPlay = true
         const tts = window.speechSynthesis
         tts.addEventListener('ended', () => {
-          console.log("done")
+          console.log('done')
           this.isPlay = false
           resolve()
         })
@@ -50,23 +56,35 @@ export default {
           reject()
         })
         const voice = new SpeechSynthesisUtterance(this.input.text)
-        voice.voice = choosedVoice 
+        voice.voice = choosedVoice
         tts.speak(voice)
       })
     },
     getVoiceList() {
       const tts = window.speechSynthesis
       const voices = tts.getVoices()
+      console.log(voices)
       voices.forEach((voice) => {
-        if(!this.langs.includes(voice.lang))
-          this.langs.push(voice.lang)
+        if (!this.langs.includes(voice.lang)) this.langs.push(voice.lang)
       })
-      this.voices = voices 
+      this.voices = voices
     },
     filterVoiceName() {
       this.voiceByLang = this.voices.filter((voice) => {
         return voice.lang == this.input.lang
-      })  
+      })
+    },
+    generateAudio() {
+      this.audioRecorder = new SpeechSynthesisRecorder({
+        text: this.input.text,
+        utteranceOptions: {
+          voice: this.voiceByLang[this.input.name].name,
+          lang: this.voiceByLang[this.input.name].lang,
+          pitch: 1,
+          rate: 1,
+          volume: 1
+        }
+      })
     }
   },
   mounted() {
