@@ -87,6 +87,7 @@
       </div>
     </div>
   </div>
+  <a id="temp"></a>
 </template>
 
 
@@ -188,14 +189,13 @@ export default {
       voiceList.forEach(voice => {
         if(voice.name == inputVoice ) choosedVoice = voice
       })
-      console.log(choosedVoice)
       await new Promise((resolve, reject) => {
         const tts = window.speechSynthesis
         this.isPlay = true
         tts.addEventListener('ended', () => {
           console.log('done')
           this.isPlay = false
-          resolve()
+          resolve(voice)
         })
         tts.addEventListener('error', () => {
           this.isPlay = false
@@ -222,6 +222,47 @@ export default {
         this.input.text = reader.result;
       };
       reader.readAsText(file);
+    },
+    async download(chat) {
+      console.log(chat)
+      let choosedVoice = null;
+      const voiceList = this.voiceList
+      let inputVoice = null
+      if(chat.person == 1) inputVoice = this.input.voice.first
+      else inputVoice = this.input.voice.second
+      voiceList.forEach(voice => {
+        if(voice.name == inputVoice ) choosedVoice = voice
+      })
+      const tts = window.speechSynthesis
+      const voice = new SpeechSynthesisUtterance(chat.textOutput)
+      voice.voice = choosedVoice
+      console.log(voice)
+
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          const mediaRecorder = new MediaRecorder(stream)
+          const audioData = []
+          mediaRecorder.addEventListener('dataavailable', (event) => {
+            audioData.push(event.data)
+          })
+          mediaRecorder.addEventListener('stop', () => {
+            const blob = new Blob(audioData, { type: 'audio/wav' })
+            const url = URL.createObjectURL(blob)
+            const link = document.getElementById('temp')
+            link.href = url
+            link.download = 'synthesized-audio.wav'
+            link.textContent = link.download
+            console.log(link)
+            link.click()
+          })
+          mediaRecorder.start()
+          voice.addEventListener('end', () => {
+            console.log('end')
+            mediaRecorder.stop()
+          })
+          speechSynthesis.speak(voice)
+        })
     }
   },
   mounted() {
