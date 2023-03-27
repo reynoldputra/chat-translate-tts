@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen bg-blue-200">
     <div class="px-10 py-4">
-      <img src="../assets/img/logo.png" />
+      <img class="w-48" src="../assets/img/logo.png" />
     </div>
     <div class="flex justify-between px-10">
       <div class="h-full p-6 flex flex-col text-[#2B4FA0] justify-end items-center text-center gap-4">
@@ -45,13 +45,19 @@
                 <p class="text-sm text-slate-600">{{chat.textInput}}</p>
                 <p class="text-md font-bold">{{chat.textOutput}}</p>
               </div>
-              <div class="w-12 h-12 my-auto ml-12 rounded-full bg-white"  @click="playVoice(chat)">
-                <img src="../assets/img/speaker.png" class=" w-6 m-auto my-auto py-3 " alt="" />
+              <div class="w-8 h-8 my-auto ml-12 rounded-full bg-white"  @click="playVoice(chat)">
+                <img src="../assets/img/speaker.png" class=" w-4 m-auto my-auto py-2 " alt="" />
+              </div>
+              <div class="w-8 h-8 my-auto ml-4 rounded-full bg-white"  @click="download(chat)">
+                <img src="../assets/img/download.png" class="w-4 m-auto my-auto py-2" alt="" />
               </div>
             </div>
             <div v-if="chat.person == 2" class="flex justify-end mb-8 text-white">
-              <div class="w-12 h-12 my-auto mr-12 rounded-full bg-[#2B4FA0]"  @click="playVoice(chat)">
-                <img src="../assets/img/speaker-white.png" class=" w-6 m-auto my-auto py-3" alt="" />
+              <div class="w-8 h-8 my-auto mr-4 rounded-full bg-[#2B4FA0]"  @click="playVoice(chat)">
+                <img src="../assets/img/speaker-white.png" class=" w-4 m-auto my-auto py-2" alt="" />
+              </div>
+              <div class="w-8 h-8 my-auto mr-12 rounded-full bg-white"  @click="download(chat)">
+                <img src="../assets/img/download.png" class="w-4 m-auto my-auto py-2" alt="" />
               </div>
               <div class="bg-[#2B4FA0] rounded-[24px] py-2 px-4 rounded-br-sm w-fit min-w-[400px]">
                 <p class="text-sm text-blue-200">{{chat.textInput}}</p>
@@ -69,6 +75,10 @@
               2
             </div>
             <input v-model="input.text" class=" w-[500px] px-4 text-sm ml-6" type="text" placeholder="Type your text here ..." />
+          </div>
+          <div class="rounded-full bg-blue-300 p-3">
+            <input type="file" id="selectedFile" style="display: none;" @change="onFileSelected" />
+            <img src="../assets/img/files.png" alt="" class="w-6"  onclick="document.getElementById('selectedFile').click();" />
           </div>
           <div @click="translate" class="rounded-full bg-blue-300 p-3">
             <img src="../assets/img/sent.png" alt="" class="w-6" />
@@ -97,8 +107,7 @@ export default {
         voice : {
           first :  languageList[0].voice,
           first :  languageList[0].voice
-        }
-
+        },
       },
       output : {
         text : null
@@ -118,7 +127,9 @@ export default {
           langCode : "id"
         }
       ],
-      voiceList : []
+      voiceList : [],
+      selectedFile: null,
+      fileContent: null
     } 
   },
   methods: {
@@ -201,6 +212,17 @@ export default {
       const voices = tts.getVoices()
       this.voiceList = voices
     },
+    onFileSelected(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.input.text = reader.result;
+      };
+      reader.readAsText(file);
+    }
   },
   mounted() {
     const tts = window.speechSynthesis
