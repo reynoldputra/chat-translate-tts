@@ -10,13 +10,13 @@
           <div>
             <p class="pb-2 text-[#2B4FA0] font-bold">First person language</p>
             <select v-model="input.lang.first" class="py-2 w-18 px-16 rounded-[28px]" name="" id="">
-              <option v-for="(lang, idx) in languageList" :value="idx">{{ lang.name }}</option>
+              <option v-for="(lang, idx) in langCode" :value="lang.code">{{ lang.name }}</option>
             </select>
           </div>
           <div>
             <p class="pb-2 text-[#2B4FA0] font-bold">Second person language</p>
             <select v-model="input.lang.second" class="py-2 px-16 w-18 rounded-[28px]" name="" id="">
-              <option v-for="(lang, idx) in languageList" :value="idx">{{ lang.name }}</option>
+              <option v-for="(lang, idx) in langCode" :value="lang.code">{{ lang.name }}</option>
             </select>
           </div>
         </div>
@@ -101,8 +101,8 @@ export default {
       languageList,
       input : {
         lang : {
-          first : 0,
-          second : 3
+          first : 'en',
+          second : 'id'
         },
         text : null,
         voice : {
@@ -118,7 +118,25 @@ export default {
       ],
       voiceList : [],
       selectedFile: null,
-      fileContent: null
+      fileContent: null,
+      langCode : [
+        {
+          code : "en",
+          name : "English" 
+        },
+        {
+          code : "it",
+          name : "Italy" 
+        },
+        {
+          code : "ja",
+          name : "Japan" 
+        },
+        {
+          code : "id",
+          name : "Indonesia" 
+        },
+      ] 
     } 
   },
   methods: {
@@ -132,11 +150,11 @@ export default {
       encodedParams.append('text', this.input.text)
       console.log(this.person)
       if(this.person == 1) {
-        encodedParams.append('target_language', this.languageList[this.input.lang.second].translate)
-        encodedParams.append('source_language', this.languageList[this.input.lang.first].translate)
+        encodedParams.append('target_language', this.input.lang.second)
+        encodedParams.append('source_language', this.input.lang.first)
       } else {
-        encodedParams.append('target_language', this.languageList[this.input.lang.first].translate)
-        encodedParams.append('source_language', this.languageList[this.input.lang.second].translate)
+        encodedParams.append('target_language', this.input.lang.first)
+        encodedParams.append('source_language', this.input.lang.second)
       }
 
       const options = {
@@ -198,6 +216,7 @@ export default {
     getVoiceList() {
       const tts = window.speechSynthesis
       const voices = tts.getVoices()
+      console.log(voices)
       this.voiceList = voices
     },
     onFileSelected(event) {

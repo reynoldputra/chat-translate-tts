@@ -12,35 +12,41 @@ const LanguageList = [
       name : 'English'
     },
     {
-      voice: 'Google español',
-      lang: 'es-ES',
-      translate: 'es',
-      name : 'Spanyol'
-    },
-    {
       voice: 'Microsoft Ardi Online (Natural) - Indonesian (Indonesia)',
       lang: 'id-ID',
       translate: 'id',
       name : 'Bahasa Indonesia'
     },
     {
-      voice: 'Google italiano',
+      voice: 'Microsoft Gadis Online (Natural) - Indonesian (Indonesia)',
+      lang: 'id-ID',
+      translate: 'id',
+      name : 'Bahasa Indonesia'
+    },
+    {
+      voice: 'Microsoft Diego Online (Natural) - Italian (Italy)',
       lang: 'it-IT',
       translate: 'it',
       name : 'Italy'
     },
     {
-      voice: 'Google 日本語',
+      voice: 'Microsoft Elsa Online (Natural) - Italian (Italy)',
+      lang: 'it-IT',
+      translate: 'it',
+      name : 'Italy'
+    },
+    {
+      voice: 'Microsoft Keita Online (Natural) - Japanese (Japan)',
       lang: 'ja-JP',
       translate: 'ja',
       name: 'Japan'
     },
     {
-      voice: 'Google 한국의',
-      lang: 'ko-KR',
-      translate: 'ko',
+      voice: 'Microsoft Nanami Online (Natural) - Japanese (Japan)',
+      lang: 'ja-JP',
+      translate: 'ja',
       name: 'Japan'
-    }    
+    }
 ]
 
 export default LanguageList
