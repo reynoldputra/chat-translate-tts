@@ -1,46 +1,51 @@
 <template>
-  <div class="h-screen bg-blue-200">
-    <div class="px-10 py-4">
+  <div class="h-screen  py-4 flex flex-col bg-blue-200">
+    <div class="px-10">
       <img class="w-48" src="../assets/img/logo.png" />
     </div>
-    <div class="flex justify-between px-10">
-      <div class="h-full p-6 flex flex-col text-[#2B4FA0] justify-end items-center text-center gap-4">
-        <img class="w-60" src="../assets/img/img-1.png" alt="">
-        <div class="flex gap-4">
-          <div>
-            <p class="pb-2 text-[#2B4FA0] font-bold">First person language</p>
-            <select v-model="input.lang.first" class="py-2 w-18 px-16 rounded-[28px]" name="" id="">
-              <option v-for="(lang, idx) in langCode" :value="lang.code">{{ lang.name }}</option>
-            </select>
-          </div>
-          <div>
-            <p class="pb-2 text-[#2B4FA0] font-bold">Second person language</p>
-            <select v-model="input.lang.second" class="py-2 px-16 w-18 rounded-[28px]" name="" id="">
-              <option v-for="(lang, idx) in langCode" :value="lang.code">{{ lang.name }}</option>
-            </select>
-          </div>
+    <div class="flex flex-grow justify-between px-10">
+      <div class="h-full px-6 py-16 flex flex-col text-[#2B4FA0] justify-between items-center text-center gap-4">
+        <div class="flex justify-between items-center flex-grow">
+          <img class="w-60" src="../assets/img/img-1.png" alt="">
         </div>
         <div>
-          <div>
-            <p class="pb-2 text-[#2B4FA0] font-bold">Choose first person voice</p>
-            <select v-model="input.voice.first" class="py-2 px-6 rounded-[28px]" name="" id="">
-              <option v-for="(lang, idx) in languageList" :value="lang.voice">{{ lang.voice }}</option>
-            </select>
+          <div class="flex gap-4">
+            <div>
+              <p class="pb-2 text-[#2B4FA0] font-bold">First person language</p>
+              <select v-model="input.lang.first" @change="onLangChange(1)" class="py-2 w-18 px-16 rounded-[28px]" name="" id="">
+                <option v-for="(lang, idx) in langCode" :value="lang.code">{{ lang.name }}</option>
+              </select>
+            </div>
+            <div>
+              <p class="pb-2 text-[#2B4FA0] font-bold">Second person language</p>
+              <select v-model="input.lang.second" @change="onLangChange(0)" class="py-2 px-16 w-18 rounded-[28px]" name="" id="">
+                <option v-for="(lang, idx) in langCode" :value="lang.code">{{ lang.name }}</option>
+              </select>
+            </div>
           </div>
           <div>
-            <p class="pb-2 text-[#2B4FA0] font-bold pt-4">Choose second person voice</p>
-            <select v-model="input.voice.second" class="py-2 px-6 rounded-[28px]" name="" id="">
-              <option v-for="(lang, idx) in languageList" :value="lang.voice">{{ lang.voice }}</option>
-            </select>
+            <div>
+              <p class="pb-2 text-[#2B4FA0] font-bold">Choose voice for {{input.langName.first}}</p>
+              <select v-model="input.voice.first" class="py-2 px-6 rounded-[28px]" name="" id="">
+                <option v-for="(lang, idx) in languageList" :value="lang.voice">{{ lang.voice }}</option>
+              </select>
+            </div>
+            <div>
+              <p class="pb-2 text-[#2B4FA0] font-bold pt-4">Choose voice for {{input.langName.second}}</p>
+              <select v-model="input.voice.second" class="py-2 px-6 rounded-[28px]" name="" id="">
+                <option v-for="(lang, idx) in languageList" :value="lang.voice">{{ lang.voice }}</option>
+              </select>
+            </div>
           </div>
-        </div>
-          <p class="text-[#2B4FA0] font-bold">Person is typing ... </p>
-          <p class="bg-white py-4 px-8 rounded-full text-lg text-[#2B4FA0] font-bold">{{person}}</p>
+        </div> 
       </div>
       <div class="w-[850px] rounded-[32px] p-10 bg-blue-100 flex flex-col justify-between">
         <div>
           <div v-for="chat in chats">
             <div v-if="chat.person == 1" class="flex mb-8">
+              <div class="my-auto w-8 h-8 text-center pt-1 font-bold mr-4 rounded-full bg-white" > 
+                1
+              </div>
               <div class="bg-white rounded-[24px] py-2 px-4 rounded-bl-sm w-fit min-w-[400px]">
                 <p class="text-sm text-slate-600">{{chat.textInput}}</p>
                 <p class="text-md font-bold">{{chat.textOutput}}</p>
@@ -63,15 +68,22 @@
                 <p class="text-sm text-blue-200">{{chat.textInput}}</p>
                 <p class="text-md font-bold">{{chat.textOutput}}</p>
               </div>
+              <div class="my-auto w-8 h-8 text-center pt-1 font-bold ml-4 rounded-full bg-[#2B4FA0]" >
+                2
+              </div>
             </div>
           </div>
         </div>
         <div class="bg-white p-2 pl-8 flex justify-between rounded-[60px]">
           <div class="flex">
-            <div @click="changePerson(1)" class="font-bold rounded-full w-8 h-8 my-auto text-center bg-blue-300 pt-1">
+            <div @click="changePerson(1)" class="cursor-pointer font-bold rounded-full w-10 h-10 my-auto text-center border-black border-4 pt-1"
+              :class="[person == 1 ? 'bg-black text-white' : '']"
+            >
               1
             </div>
-            <div @click="changePerson(2)" class="bg-[#2B4FA0] text-white font-bold rounded-full ml-4 w-8 h-8 my-auto text-center pt-1">
+            <div @click="changePerson(2)" class="cursor-pointer border-4 text-[#2B4FA0] font-bold rounded-full ml-4 w-10 h-10 my-auto border-[#2B4FA0] text-center pt-1"
+              :class="[person == 2 ? 'bg-[#2B4FA0] text-white' : '']"
+            >
               2
             </div>
             <input v-model="input.text" class=" w-[500px] px-4 text-sm ml-6" type="text" placeholder="Type your text here ..." />
@@ -87,7 +99,7 @@
       </div>
     </div>
   </div>
-  <a id="temp"></a>
+  <a id="temp" class="hidden"></a>
 </template>
 
 
@@ -104,10 +116,14 @@ export default {
           first : 'en',
           second : 'id'
         },
+        langName : {
+          first : 'English',
+          second : 'Bahasa Indonesia'
+        },
         text : null,
         voice : {
           first :  languageList[0].voice,
-          first :  languageList[0].voice
+          second :  languageList[0].voice
         },
       },
       output : {
@@ -115,6 +131,16 @@ export default {
       },
       person: 1,
       chats : [
+        {
+          textInput : "Halo",
+          textOutput : "Halloo",
+          person : 1
+        },
+        {
+          textInput : "Halo",
+          textOutput : "Halloo",
+          person : 2
+        }
       ],
       voiceList : [],
       selectedFile: null,
@@ -143,6 +169,24 @@ export default {
     changePerson(i) {
       this.person = i;
       console.log(this.person)
+    },
+    onLangChange(first){
+      
+      if(first) {
+        let found = this.langCode.find((v) => {
+          console.log(v)
+          return v.code == this.input.lang.first
+        })
+        console.log(found)
+        this.input.langName.first = found.name
+      } else {
+        let found = this.langCode.find((v) => {
+          console.log(v)
+          return v.code == this.input.lang.second
+        })
+        console.log(found)
+        this.input.langName.second = found.name
+      }
     },
     translate() {
       console.log(this.input)
@@ -186,7 +230,6 @@ export default {
 
     },
     async playVoice(chat) {
-      console.log(chat)
       let choosedVoice = null;
       const voiceList = this.voiceList
       let inputVoice = null
@@ -240,7 +283,6 @@ export default {
       voiceList.forEach(voice => {
         if(voice.name == inputVoice ) choosedVoice = voice
       })
-      const tts = window.speechSynthesis
       const voice = new SpeechSynthesisUtterance(chat.textOutput)
       voice.voice = choosedVoice
       console.log(voice)
